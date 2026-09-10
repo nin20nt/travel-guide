@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>我的旅行手册</title>
+<title>GRADUATION TRIP</title>
 <meta name="theme-color" content="#24303b">
 <style>
   :root {
@@ -35,12 +35,6 @@
 
   a { color: inherit; }
 
-  .wrap {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
   /* ---------- Header ---------- */
 
   header.hero {
@@ -52,11 +46,11 @@
 
   header.hero h1 {
     font-family: Georgia, "Iowan Old Style", "Noto Serif SC", serif;
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     font-weight: 600;
     margin: 0 0 6px;
-    padding-right: 84px;
-    letter-spacing: 0.01em;
+    padding-right: 108px;
+    letter-spacing: 0.02em;
   }
 
   header.hero .subtitle {
@@ -69,27 +63,45 @@
     position: absolute;
     top: 22px;
     right: 16px;
-    width: 74px;
-    height: 74px;
-    border-radius: 50%;
+    min-width: 88px;
+    padding: 8px 10px 7px;
+    border-radius: 10px;
     border: 1.5px dashed var(--stamp);
     color: var(--stamp);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transform: rotate(-6deg);
+    gap: 2px;
+    transform: rotate(-4deg);
     background: var(--paper-card);
     text-align: center;
-    line-height: 1.1;
+    line-height: 1.15;
   }
 
-  .weather .w-icon { font-size: 1.1rem; }
+  .weather .w-city {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    max-width: 84px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .weather .w-main {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .weather .w-icon { font-size: 1rem; }
   .weather .w-temp { font-family: Georgia, serif; font-size: 1.05rem; font-weight: 700; }
+
   .weather .w-time {
     font-size: 0.5rem;
     color: var(--ink-soft);
-    max-width: 64px;
+    max-width: 84px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -204,7 +216,7 @@
     text-align: right;
     font-family: Georgia, serif;
     font-weight: 700;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     color: var(--stamp);
     transform: translateX(-100%);
   }
@@ -219,6 +231,14 @@
     margin: 0;
     color: var(--ink-soft);
     font-size: 0.87rem;
+  }
+
+  .empty-note {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 0.88rem;
+    padding: 2px 0 16px 4px;
+    margin: 0;
   }
 
   footer {
@@ -238,8 +258,11 @@
     <h1 id="tripTitle"></h1>
     <p class="subtitle" id="tripSubtitle"></p>
     <div class="weather" id="weatherBadge" aria-live="polite">
-      <span class="w-icon" id="weatherIcon">🌤️</span>
-      <span class="w-temp" id="weatherTemp">--°</span>
+      <span class="w-city" id="weatherCity">--</span>
+      <span class="w-main">
+        <span class="w-icon" id="weatherIcon">🌤️</span>
+        <span class="w-temp" id="weatherTemp">--°</span>
+      </span>
       <span class="w-time" id="weatherTime">获取中</span>
     </div>
   </header>
@@ -249,7 +272,7 @@
   <main id="dayPanels"></main>
 
   <footer>
-    首次联网打开一次后，本页可离线查看；天气会在联网时自动刷新。
+    首次联网打开一次后，本页可离线查看；天气会跟着当前选中的城市自动刷新。
   </footer>
 
 <script>
@@ -257,48 +280,216 @@
   ============================================================
   在这里改成你自己的行程。
   改完保存、push 到 GitHub，Cloudflare 会自动重新发布。
+
+  每一天可以选填 location（到了新城市那天才需要写）：
+  没写的话会自动沿用上一天的城市，用来查当地实时天气。
   ============================================================
 */
 const CONFIG = {
-  title: "京都三日漫游",                    // 手册标题
-  subtitle: "日本 · 京都 · 3 天行程 · 示例内容，请替换",  // 副标题
-  location: {                              // 用于获取当地实时天气
-    name: "京都",
-    lat: 35.0116,                          // 目的地纬度，可在地图 App 长按取点查看
-    lon: 135.7681                          // 目的地经度
-  },
+  title: "GRADUATION TRIP",
+  subtitle: "2027.11 - 2027.12",
+  defaultLocation: { name: "悉尼", lat: -33.8688, lon: 151.2093 },
   days: [
     {
       label: "Day 1",
-      date: "9月12日 · 周六",
-      note: "抵达 + 岚山初探",
+      date: "11月15日",
+      note: "坐飞机",
+      location: { name: "悉尼", lat: -33.8688, lon: 151.2093 },
       stops: [
-        { time: "14:00", title: "京都站 → 岚山", note: "示例：搭乘 JR 嵯峨野线，车程约 15 分钟" },
-        { time: "15:30", title: "岚山竹林小径", note: "示例：沿小径走到野宫神社，傍晚人少更好拍照" },
-        { time: "18:00", title: "晚饭：河原町一带", note: "示例：随便找一家拉面店" }
+        { time: "22:00（悉尼时间）", title: "悉尼 → 广州（转机）", note: "过夜航班，直飞广州转机" }
       ]
     },
     {
       label: "Day 2",
-      date: "9月13日 · 周日",
-      note: "清水寺 + 祇园",
+      date: "11月15日", // TODO: 确认一下，是不是应该是 11月16日？
+      note: "广州转机逛街 + 飞上海",
+      location: { name: "广州", lat: 23.1291, lon: 113.2644 },
       stops: [
-        { time: "09:00", title: "清水寺", note: "示例：建议开门后早点去，人少" },
-        { time: "12:00", title: "二年坂 · 三年坂", note: "示例：老街逛吃，买点纪念品" },
-        { time: "19:00", title: "祇园夜游", note: "示例：花见小路碰运气看看艺伎" }
+        { time: "早上5点-下午4点", title: "广州北京路步行街 / 东山口", note: "转机11小时，趁空档出来逛逛" },
+        { time: "中午起飞", title: "广州 → 上海", note: "傍晚6点到达，出机场约1小时到市区；晚上去酒店附近逛吃、打卡外滩" }
       ]
     },
     {
       label: "Day 3",
-      date: "9月14日 · 周一",
-      note: "伏见稻荷 + 返程",
+      date: "11月16日",
+      note: "武康大楼，柯灵故居，田子坊，外滩",
       stops: [
-        { time: "08:30", title: "伏见稻荷大社", note: "示例：千本鸟居，走到山顶来回约 2 小时" },
-        { time: "13:00", title: "京都站买伴手礼", note: "示例：站内 The Cube 商场" },
-        { time: "16:00", title: "前往机场", note: "示例：预留好交通时间" }
+        { time: "09:30", title: "武康大楼", note: "网红建筑，拍照打卡，楼下有咖啡店可以歇脚" },
+        { time: "10:30", title: "柯灵故居", note: "就在武康路附近，老洋房里的名人故居，人不多" },
+        { time: "12:00", title: "安福路一带午饭", note: "周边不少小馆子和咖啡馆" },
+        { time: "14:00", title: "田子坊", note: "老弄堂改造的文创街区，逛店铺、买手信" },
+        { time: "17:00", title: "外滩", note: "沿江散步，等天黑看对岸陆家嘴亮灯" },
+        { time: "18:30", title: "外滩附近晚饭", note: "结束这一天" }
+      ]
+    },
+    {
+      label: "Day 4",
+      date: "11月17日",
+      note: "豫园，南京路步行街，陆家嘴，外滩", // 原表写的是"陆家口"，按地名改成了"陆家嘴"，不对的话跟我说
+      stops: [
+        { time: "09:00", title: "豫园", note: "老城厢古典园林，旁边城隍庙可以顺便逛" },
+        { time: "11:00", title: "豫园商城", note: "老字号小吃一条街，南翔小笼包本店就在这" },
+        { time: "13:00", title: "南京路步行街", note: "从人民广场一路逛到外滩" },
+        { time: "15:30", title: "外滩", note: "下午光线拍照不错" },
+        { time: "16:30", title: "陆家嘴", note: "坐地铁2号线或外滩观光隧道过江，逛国金中心、看三件套" },
+        { time: "18:30", title: "陆家嘴/外滩看夜景", note: "华灯初上是上海最经典的画面，边吃晚饭边看" }
+      ]
+    },
+    {
+      label: "Day 5",
+      date: "11月18日",
+      note: "上海去杭州，西湖",
+      location: { name: "杭州", lat: 30.2741, lon: 120.1551 },
+      stops: [
+        { time: "09:00", title: "上海 → 杭州", note: "坐 Y701，车程约1小时出头" },
+        { time: "11:00", title: "酒店寄存行李", note: "先放好行李再出门" },
+        { time: "13:00", title: "西湖：苏堤", note: "沿苏堤走走，秋天不算太挤" },
+        { time: "15:00", title: "三潭印月 / 湖心亭", note: "想上岛的话可以坐游船，视时间安排" },
+        { time: "17:00", title: "断桥", note: "傍晚光线好，顺路走回市区" },
+        { time: "18:30", title: "河坊街一带晚饭", note: "老街小吃，顺便逛逛" }
+      ]
+    },
+    {
+      label: "Day 6",
+      date: "11月19日",
+      note: "杭州，寺庙路线/爬山",
+      stops: [
+        { time: "08:30", title: "灵隐寺", note: "建议早点去，人少" },
+        { time: "09:30", title: "飞来峰", note: "和灵隐寺挨着，石窟造像" },
+        { time: "11:00", title: "韬光寺步道", note: "灵隐后山上山的小径，约1小时，森林氧吧" },
+        { time: "12:30", title: "韬光寺", note: "山上茶室能看到西湖远景，顺便歇脚吃饭" },
+        { time: "14:00", title: "北高峰（视体力）", note: "继续往上到山顶观景台，体力有限可以省略" },
+        { time: "16:00", title: "下山回西湖边", note: "傍晚湖边散步" }
+      ]
+    },
+    {
+      label: "Day 7",
+      date: "11月20日",
+      note: "杭州，宋城（文化主题乐园）",
+      stops: [
+        { time: "13:00", title: "宋城", note: "下午进园开始逛，各种街头小型演出全天不间断" },
+        { time: "14:00-17:00", title: "园区自由活动", note: "换装拍照、逛小吃街、看穿插的小型演出" },
+        { time: "18:00", title: "园区内晚饭", note: "" },
+        { time: "19:30", title: "《宋城千古情》", note: "提前订票，建议早半小时进场找位置" },
+        { time: "21:00", title: "散场返回市区", note: "" }
+      ]
+    },
+    {
+      label: "Day 8",
+      date: "11月21日",
+      note: "杭州去南京，中山陵景区",
+      location: { name: "南京", lat: 32.0603, lon: 118.7969 },
+      stops: [
+        { time: "08:30", title: "杭州东站 → 南京南站", note: "高铁约1.5-2小时" },
+        { time: "10:30", title: "抵达南京，酒店寄存行李", note: "" },
+        { time: "13:00", title: "中山陵", note: "392级台阶，建议留够体力" },
+        { time: "15:00", title: "明孝陵", note: "同一片紫金山风景区，石象路值得走一走" },
+        { time: "16:30", title: "灵谷寺（视时间）", note: "同区域内，还有时间可以顺路看看" },
+        { time: "18:00", title: "晚饭", note: "" }
+      ]
+    },
+    {
+      label: "Day 9",
+      date: "11月22日",
+      note: "红山动物园，玄武湖，城墙，鸡鸣寺",
+      stops: [
+        { time: "08:30", title: "红山动物园", note: "森林式动物园，逛下来要不少时间" },
+        { time: "12:00", title: "附近午饭", note: "" },
+        { time: "13:30", title: "玄武湖公园", note: "环湖散步，也可以坐船" },
+        { time: "15:00", title: "南京城墙（太平门段）", note: "沿墙走可以俯瞰玄武湖" },
+        { time: "16:30", title: "鸡鸣寺", note: "香火旺，山门口有卖赤豆元宵的老字号" },
+        { time: "18:00", title: "晚饭", note: "" }
+      ]
+    },
+    {
+      label: "Day 10",
+      date: "11月23日",
+      note: "南京大屠杀纪念馆",
+      stops: [
+        { time: "提前预约", title: "微信公众号预约", note: "搜索\"侵华日军南京大屠杀遇难同胞纪念馆\"公众号，可提前1-7天预约，每天早8点放票，记得提前几天订好" },
+        { time: "09:00", title: "参观纪念馆", note: "内容比较沉重，预留2-3小时，建议带耳机听讲解" },
+        { time: "12:30", title: "午饭", note: "上午心情会比较沉重，可以找个安静点的地方吃饭" },
+        { time: "下午", title: "自由活动 / 休息", note: "这天不排太满，留给自己消化一下" }
+      ]
+    },
+    {
+      label: "Day 11",
+      date: "11月24日",
+      note: "南京去常州，天宁寺，红梅公园，青果巷（三选二）",
+      location: { name: "常州", lat: 31.8107, lon: 119.9741 },
+      stops: [
+        { time: "09:00", title: "南京南站 → 常州北站", note: "高铁约30-40分钟" },
+        { time: "10:00", title: "抵达常州，寄存行李", note: "" },
+        { time: "11:00", title: "天宁寺", note: "常州地标，宝塔可以登顶远眺" },
+        { time: "12:30", title: "红梅公园", note: "和天宁寺挨着，园内有文笔塔，两个放一起逛不费额外时间，就算是三选二里选的两个" },
+        { time: "14:00", title: "午饭", note: "" },
+        { time: "15:30", title: "青果巷（视精力，可选）", note: "老运河边的历史街区，体力够的话可以加上，逛不动就留给下次" },
+        { time: "18:00", title: "晚饭", note: "" }
+      ]
+    },
+    {
+      label: "Day 12",
+      date: "11月25日",
+      note: "中华恐龙园",
+      stops: [
+        { time: "09:00", title: "中华恐龙园开园", note: "建议开园就进，人少的时候先玩热门项目" },
+        { time: "09:30", title: "大型游乐设施", note: "过山车之类先玩，排队人少" },
+        { time: "12:00", title: "园区内午饭", note: "" },
+        { time: "13:30", title: "恐龙主题展区", note: "恐龙谷、动物展区等" },
+        { time: "17:00", title: "晚饭", note: "园区内或附近" },
+        { time: "19:00", title: "灯光秀 / 夜场表演", note: "具体以当天演出安排为准" }
+      ]
+    },
+    {
+      label: "Day 13",
+      date: "11月26日",
+      note: "常州去苏州，东方之门",
+      location: { name: "苏州", lat: 31.2989, lon: 120.5853 },
+      stops: [
+        { time: "09:30", title: "常州北站 → 苏州北站", note: "高铁约30-40分钟" },
+        { time: "10:30", title: "抵达苏州，酒店寄存行李", note: "" },
+        { time: "13:00", title: "东方之门", note: "苏州工业园区地标建筑，人称\"秋裤楼\"" },
+        { time: "14:00", title: "金鸡湖畔散步", note: "沿湖走走，天气好的话很舒服" },
+        { time: "17:00", title: "自由活动 / 休息", note: "为接下来两天的老城区行程养精蓄锐" },
+        { time: "18:30", title: "晚饭", note: "" }
+      ]
+    },
+    {
+      label: "Day 14",
+      date: "11月27日",
+      note: "苏州博物馆，狮子林，拙政园，平江路",
+      stops: [
+        { time: "08:30", title: "苏州博物馆", note: "贝聿铭设计，建议提前在官方公众号预约，周一闭馆" },
+        { time: "10:30", title: "拙政园", note: "就在博物馆隔壁，中国四大名园之一，留够1.5-2小时" },
+        { time: "13:00", title: "午饭", note: "" },
+        { time: "14:00", title: "狮子林", note: "步行几分钟就到，假山迷宫很好玩" },
+        { time: "15:30", title: "平江路", note: "沿河老街，慢慢逛，找家茶馆坐坐" },
+        { time: "18:00", title: "平江路一带晚饭", note: "" }
+      ]
+    },
+    {
+      label: "Day 15",
+      date: "11月28日",
+      note: "虎丘，留园，西园寺，七里山塘",
+      stops: [
+        { time: "08:30", title: "虎丘", note: "早上人少光线好，虎丘塔（斜塔）、试剑石" },
+        { time: "10:30", title: "七里山塘", note: "从虎丘这头开始走山塘街，沿河老街逛回市区" },
+        { time: "12:30", title: "山塘街午饭", note: "" },
+        { time: "14:00", title: "留园", note: "苏州四大名园之一，建筑和假山很精致" },
+        { time: "15:45", title: "西园寺", note: "和留园很近，五百罗汉堂值得一看" },
+        { time: "17:30", title: "晚饭", note: "结束这一天" }
+      ]
+    },
+    {
+      label: "Day 16",
+      date: "11月29日",
+      note: "苏州去上海，上海回悉尼",
+      location: { name: "上海", lat: 31.2304, lon: 121.4737 },
+      stops: [
+        { time: "14:50", title: "上海 → 广州 → 悉尼", note: "广州转机3小时35分，第二天到悉尼" }
       ]
     }
-    // 想加第 4 天，就照抄上面一个 { ... } 整段，改内容再加一个逗号接上
+    // 想加一天，就照抄上面一个 { ... } 整段，改内容再加一个逗号接上
   ]
 };
 
@@ -316,6 +507,17 @@ function renderHeader() {
   document.getElementById('tripSubtitle').textContent = CONFIG.subtitle;
   document.title = CONFIG.title;
 }
+
+// 每一天沿用最近一次出现的 location，没写就往前找
+function resolveLocations() {
+  let last = CONFIG.defaultLocation || null;
+  return CONFIG.days.map((day) => {
+    if (day.location) last = day.location;
+    return last;
+  });
+}
+
+let dayLocations = [];
 
 function renderDays() {
   const tabsWrap = document.getElementById('dayTabs');
@@ -340,17 +542,22 @@ function renderDays() {
     head.appendChild(el('p', null, day.note || ''));
     panel.appendChild(head);
 
-    const list = el('ol', 'timeline');
-    day.stops.forEach((stop) => {
-      const li = el('li');
-      li.appendChild(el('span', 't-time', stop.time));
-      const body = el('div', 't-body');
-      body.appendChild(el('p', 't-title', stop.title));
-      if (stop.note) body.appendChild(el('p', 't-note', stop.note));
-      li.appendChild(body);
-      list.appendChild(li);
-    });
-    panel.appendChild(list);
+    if (day.stops && day.stops.length) {
+      const list = el('ol', 'timeline');
+      day.stops.forEach((stop) => {
+        const li = el('li');
+        li.appendChild(el('span', 't-time', stop.time || ''));
+        const body = el('div', 't-body');
+        body.appendChild(el('p', 't-title', stop.title));
+        if (stop.note) body.appendChild(el('p', 't-note', stop.note));
+        li.appendChild(body);
+        list.appendChild(li);
+      });
+      panel.appendChild(list);
+    } else {
+      panel.appendChild(el('p', 'empty-note', '行程细节还没定，到时候再更新'));
+    }
+
     panelsWrap.appendChild(panel);
   });
 }
@@ -363,6 +570,7 @@ function showDay(index) {
   document.querySelectorAll('.day-panel').forEach((panel) => {
     panel.classList.toggle('active', Number(panel.dataset.index) === index);
   });
+  updateWeatherFor(index);
 }
 
 /* ============ 当地实时天气：Open-Meteo，免费、不用注册 ============ */
@@ -377,32 +585,34 @@ function codeToEmoji(code) {
   return '🌤️';
 }
 
-function paintWeather(temp, code, when, stale) {
-  document.getElementById('weatherTemp').textContent = Math.round(temp) + '°';
-  document.getElementById('weatherIcon').textContent = codeToEmoji(code);
-  document.getElementById('weatherTime').textContent = (stale ? '离线·' : '') + when;
+function paintWeather(city, temp, code, when, stale) {
+  document.getElementById('weatherCity').textContent = city || '--';
+  document.getElementById('weatherTemp').textContent = (temp != null) ? Math.round(temp) + '°' : '--°';
+  document.getElementById('weatherIcon').textContent = (code != null) ? codeToEmoji(code) : '🌤️';
+  document.getElementById('weatherTime').textContent = when ? ((stale ? '离线·' : '') + when) : '暂无数据';
 }
 
-async function updateWeather() {
-  const { lat, lon } = CONFIG.location;
+async function updateWeatherFor(index) {
+  const loc = dayLocations[index];
+  if (!loc) return;
+  const cacheKey = 'weather:' + loc.name;
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat +
-      '&longitude=' + lon + '&current_weather=true';
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat +
+      '&longitude=' + loc.lon + '&current_weather=true';
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error('bad response');
     const data = await res.json();
     const cw = data.current_weather;
     const stamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-    paintWeather(cw.temperature, cw.weathercode, stamp, false);
-    localStorage.setItem('lastWeather', JSON.stringify({ temp: cw.temperature, code: cw.weathercode, time: stamp }));
+    paintWeather(loc.name, cw.temperature, cw.weathercode, stamp, false);
+    localStorage.setItem(cacheKey, JSON.stringify({ temp: cw.temperature, code: cw.weathercode, time: stamp }));
   } catch (err) {
-    const cached = localStorage.getItem('lastWeather');
+    const cached = localStorage.getItem(cacheKey);
     if (cached) {
       const w = JSON.parse(cached);
-      paintWeather(w.temp, w.code, w.time, true);
+      paintWeather(loc.name, w.temp, w.code, w.time, true);
     } else {
-      document.getElementById('weatherTemp').textContent = '--°';
-      document.getElementById('weatherTime').textContent = '暂无网络';
+      paintWeather(loc.name, null, null, null, true);
     }
   }
 }
@@ -417,7 +627,8 @@ if ('serviceWorker' in navigator) {
 
 renderHeader();
 renderDays();
-updateWeather();
+dayLocations = resolveLocations();
+updateWeatherFor(0);
 </script>
 </body>
 </html>
