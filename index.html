@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>我的旅行手册</title>
+<meta name="theme-color" content="#24303b">
+<style>
+  :root {
+    --paper: #efe6d3;
+    --paper-card: #fbf7ec;
+    --paper-line: #d8c9a8;
+    --ink: #24303b;
+    --ink-soft: #5b6672;
+    --stamp: #9c3b2c;
+    --tag: #2f6b5e;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding-bottom: 48px;
+  }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ---------- Header ---------- */
+
+  header.hero {
+    position: relative;
+    padding: 28px 20px 20px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  header.hero h1 {
+    font-family: Georgia, "Iowan Old Style", "Noto Serif SC", serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+    padding-right: 84px;
+    letter-spacing: 0.01em;
+  }
+
+  header.hero .subtitle {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+
+  .weather {
+    position: absolute;
+    top: 22px;
+    right: 16px;
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    border: 1.5px dashed var(--stamp);
+    color: var(--stamp);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-6deg);
+    background: var(--paper-card);
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .weather .w-icon { font-size: 1.1rem; }
+  .weather .w-temp { font-family: Georgia, serif; font-size: 1.05rem; font-weight: 700; }
+  .weather .w-time {
+    font-size: 0.5rem;
+    color: var(--ink-soft);
+    max-width: 64px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- Day tabs ---------- */
+
+  nav.day-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 20px 14px;
+    max-width: 640px;
+    margin: 0 auto;
+    scrollbar-width: none;
+  }
+  nav.day-tabs::-webkit-scrollbar { display: none; }
+
+  nav.day-tabs button {
+    flex: 0 0 auto;
+    font: inherit;
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: var(--paper-card);
+    border: 1px solid var(--paper-line);
+    border-radius: 6px 6px 0 0;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+
+  nav.day-tabs button.active {
+    background: var(--ink);
+    color: var(--paper-card);
+    border-color: var(--ink);
+  }
+
+  nav.day-tabs button:focus-visible {
+    outline: 2px solid var(--stamp);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Day panel ---------- */
+
+  main { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+
+  .day-panel { display: none; }
+  .day-panel.active {
+    display: block;
+    animation: fade-in 0.25s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .day-panel.active { animation: none; }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .day-head {
+    background: var(--paper-card);
+    border: 1px solid var(--paper-line);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .day-head h2 {
+    font-family: Georgia, "Iowan Old Style", "Noto Serif SC", serif;
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+  }
+
+  .day-head p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+
+  ol.timeline {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0 0 0 20px;
+    border-left: 2px solid var(--paper-line);
+  }
+
+  ol.timeline li {
+    position: relative;
+    padding: 0 0 26px 58px;
+  }
+
+  ol.timeline li:last-child { padding-bottom: 4px; }
+
+  ol.timeline li::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--tag);
+    border: 2px solid var(--paper);
+  }
+
+  .t-time {
+    position: absolute;
+    left: -20px;
+    top: -1px;
+    width: 60px;
+    text-align: right;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--stamp);
+    transform: translateX(-100%);
+  }
+
+  .t-title {
+    margin: 0 0 3px;
+    font-weight: 600;
+    font-size: 0.98rem;
+  }
+
+  .t-note {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.87rem;
+  }
+
+  footer {
+    max-width: 640px;
+    margin: 32px auto 0;
+    padding: 14px 20px 0;
+    border-top: 1px dashed var(--paper-line);
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <h1 id="tripTitle"></h1>
+    <p class="subtitle" id="tripSubtitle"></p>
+    <div class="weather" id="weatherBadge" aria-live="polite">
+      <span class="w-icon" id="weatherIcon">🌤️</span>
+      <span class="w-temp" id="weatherTemp">--°</span>
+      <span class="w-time" id="weatherTime">获取中</span>
+    </div>
+  </header>
+
+  <nav class="day-tabs" id="dayTabs" aria-label="选择天数"></nav>
+
+  <main id="dayPanels"></main>
+
+  <footer>
+    首次联网打开一次后，本页可离线查看；天气会在联网时自动刷新。
+  </footer>
+
+<script>
+/*
+  ============================================================
+  在这里改成你自己的行程。
+  改完保存、push 到 GitHub，Cloudflare 会自动重新发布。
+  ============================================================
+*/
+const CONFIG = {
+  title: "京都三日漫游",                    // 手册标题
+  subtitle: "日本 · 京都 · 3 天行程 · 示例内容，请替换",  // 副标题
+  location: {                              // 用于获取当地实时天气
+    name: "京都",
+    lat: 35.0116,                          // 目的地纬度，可在地图 App 长按取点查看
+    lon: 135.7681                          // 目的地经度
+  },
+  days: [
+    {
+      label: "Day 1",
+      date: "9月12日 · 周六",
+      note: "抵达 + 岚山初探",
+      stops: [
+        { time: "14:00", title: "京都站 → 岚山", note: "示例：搭乘 JR 嵯峨野线，车程约 15 分钟" },
+        { time: "15:30", title: "岚山竹林小径", note: "示例：沿小径走到野宫神社，傍晚人少更好拍照" },
+        { time: "18:00", title: "晚饭：河原町一带", note: "示例：随便找一家拉面店" }
+      ]
+    },
+    {
+      label: "Day 2",
+      date: "9月13日 · 周日",
+      note: "清水寺 + 祇园",
+      stops: [
+        { time: "09:00", title: "清水寺", note: "示例：建议开门后早点去，人少" },
+        { time: "12:00", title: "二年坂 · 三年坂", note: "示例：老街逛吃，买点纪念品" },
+        { time: "19:00", title: "祇园夜游", note: "示例：花见小路碰运气看看艺伎" }
+      ]
+    },
+    {
+      label: "Day 3",
+      date: "9月14日 · 周一",
+      note: "伏见稻荷 + 返程",
+      stops: [
+        { time: "08:30", title: "伏见稻荷大社", note: "示例：千本鸟居，走到山顶来回约 2 小时" },
+        { time: "13:00", title: "京都站买伴手礼", note: "示例：站内 The Cube 商场" },
+        { time: "16:00", title: "前往机场", note: "示例：预留好交通时间" }
+      ]
+    }
+    // 想加第 4 天，就照抄上面一个 { ... } 整段，改内容再加一个逗号接上
+  ]
+};
+
+/* ============ 下面是渲染逻辑，一般不需要改 ============ */
+
+function el(tag, cls, text) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text != null) node.textContent = text;
+  return node;
+}
+
+function renderHeader() {
+  document.getElementById('tripTitle').textContent = CONFIG.title;
+  document.getElementById('tripSubtitle').textContent = CONFIG.subtitle;
+  document.title = CONFIG.title;
+}
+
+function renderDays() {
+  const tabsWrap = document.getElementById('dayTabs');
+  const panelsWrap = document.getElementById('dayPanels');
+  tabsWrap.innerHTML = '';
+  panelsWrap.innerHTML = '';
+
+  CONFIG.days.forEach((day, i) => {
+    const tab = el('button', null, day.label);
+    tab.type = 'button';
+    tab.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    if (i === 0) tab.classList.add('active');
+    tab.addEventListener('click', () => showDay(i));
+    tabsWrap.appendChild(tab);
+
+    const panel = el('section', 'day-panel');
+    panel.dataset.index = i;
+    if (i === 0) panel.classList.add('active');
+
+    const head = el('div', 'day-head');
+    head.appendChild(el('h2', null, day.label + ' · ' + day.date));
+    head.appendChild(el('p', null, day.note || ''));
+    panel.appendChild(head);
+
+    const list = el('ol', 'timeline');
+    day.stops.forEach((stop) => {
+      const li = el('li');
+      li.appendChild(el('span', 't-time', stop.time));
+      const body = el('div', 't-body');
+      body.appendChild(el('p', 't-title', stop.title));
+      if (stop.note) body.appendChild(el('p', 't-note', stop.note));
+      li.appendChild(body);
+      list.appendChild(li);
+    });
+    panel.appendChild(list);
+    panelsWrap.appendChild(panel);
+  });
+}
+
+function showDay(index) {
+  document.querySelectorAll('.day-tabs button').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+    btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
+  });
+  document.querySelectorAll('.day-panel').forEach((panel) => {
+    panel.classList.toggle('active', Number(panel.dataset.index) === index);
+  });
+}
+
+/* ============ 当地实时天气：Open-Meteo，免费、不用注册 ============ */
+
+function codeToEmoji(code) {
+  if (code === 0) return '☀️';
+  if ([1, 2, 3].includes(code)) return '⛅';
+  if ([45, 48].includes(code)) return '🌫️';
+  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return '🌧️';
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return '🌨️';
+  if ([95, 96, 99].includes(code)) return '⛈️';
+  return '🌤️';
+}
+
+function paintWeather(temp, code, when, stale) {
+  document.getElementById('weatherTemp').textContent = Math.round(temp) + '°';
+  document.getElementById('weatherIcon').textContent = codeToEmoji(code);
+  document.getElementById('weatherTime').textContent = (stale ? '离线·' : '') + when;
+}
+
+async function updateWeather() {
+  const { lat, lon } = CONFIG.location;
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat +
+      '&longitude=' + lon + '&current_weather=true';
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('bad response');
+    const data = await res.json();
+    const cw = data.current_weather;
+    const stamp = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    paintWeather(cw.temperature, cw.weathercode, stamp, false);
+    localStorage.setItem('lastWeather', JSON.stringify({ temp: cw.temperature, code: cw.weathercode, time: stamp }));
+  } catch (err) {
+    const cached = localStorage.getItem('lastWeather');
+    if (cached) {
+      const w = JSON.parse(cached);
+      paintWeather(w.temp, w.code, w.time, true);
+    } else {
+      document.getElementById('weatherTemp').textContent = '--°';
+      document.getElementById('weatherTime').textContent = '暂无网络';
+    }
+  }
+}
+
+/* ============ 离线支持：注册 Service Worker ============ */
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => { /* 忽略注册失败，不影响页面本身 */ });
+  });
+}
+
+renderHeader();
+renderDays();
+updateWeather();
+</script>
+</body>
+</html>
