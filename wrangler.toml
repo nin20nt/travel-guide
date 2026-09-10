@@ -1,5 +1,8 @@
-name = "my-travel-guide"
+name = "2027hsctrip"
 compatibility_date = "2025-09-01"
+
+workers_dev = true
+preview_urls = false
 
 [assets]
 directory = "./public"
